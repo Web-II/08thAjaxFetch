@@ -1,7 +1,11 @@
+function fetchRequest(url){
+	return fetch(url)
+  		.then(body => body.json());
+}
+
 class JokeApp{
 	getData(){
-		fetch('https://official-joke-api.appspot.com/random_joke')
-  		.then(body => body.json()) //retourneert promise object met response
+		fetchRequest('https://official-joke-api.appspot.com/random_joke') //retourneert promise object met response
   		.then(data => this.toHtml(data)) //resolve promise (argument is response)
 		.catch(error => console.error(error)); //reject promise (argument is error)		
 	}

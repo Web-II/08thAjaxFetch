@@ -1,20 +1,23 @@
-class JokeApp{
-	getData(){
-		new Promise((resolve, reject) => {
-			const request = new XMLHttpRequest();
-			request.open('GET', 'https://official-joke-api.appspot.com/random_joke');
-			request.onreadystatechange = () => {
-				if (request.readyState === 4){
-				  	if (request.status === 200) {			  	
-						resolve(JSON.parse(request.responseText));
-					}
-					else {
-						reject(`ERROR ${request.status} while processing.`);
-					}
+function ajaxRequest(url){
+	return new Promise((resolve, reject) => {
+		const request = new XMLHttpRequest();
+		request.open('GET',url );
+		request.onreadystatechange = () => {
+			if (request.readyState === 4){
+				if (request.status === 200) {			  	
+					resolve(JSON.parse(request.responseText));
+				}
+				else {
+					reject(`ERROR ${request.status} while processing.`);
 				}
 			}
-			request.send();
-		})
+		}
+		request.send();
+	});
+}
+class JokeApp{
+	getData(){
+		ajaxRequest('https://official-joke-api.appspot.com/random_joke')		
 		.then(resolveValue => { this.toHtml(resolveValue); })
 		.catch(rejectValue => { console.log(rejectValue); });
 	}

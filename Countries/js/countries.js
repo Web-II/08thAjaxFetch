@@ -1,3 +1,24 @@
+function ajaxRequest(url){
+	return new Promise((resolve, reject) => {
+			const request = new XMLHttpRequest();
+			request.open('GET', url);
+			request.onreadystatechange = () => {
+				if (request.readyState === 4){
+				  	if (request.status === 200) {			  	
+						resolve(JSON.parse(request.responseText));
+					}
+					else {
+						reject(`ERROR ${request.status} while processing.`);
+					}
+				}
+			}
+			request.send(); 
+		})
+}
+function fetchRequest(url){
+	return fetch(url)
+  		.then(body => body.json());
+}
 class Country {
 	constructor(countryName, capital, region, flag) {
 		this.countryName = countryName;
@@ -59,21 +80,8 @@ class CountriesApp {
 		this._countriesRepository = value;
 	}
 	getData(){
-		new Promise((resolve, reject) => {
-			const request = new XMLHttpRequest();
-			request.open('GET', 'https://restcountries.eu/rest/v2/all');
-			request.onreadystatechange = () => {
-				if (request.readyState === 4){
-				  	if (request.status === 200) {			  	
-						resolve(JSON.parse(request.responseText));
-					}
-					else {
-						reject(`ERROR ${request.status} while processing.`);
-					}
-				}
-			}
-			request.send(); 
-		})
+		//ajaxRequest('https://restcountries.eu/rest/v2/all')
+		fetchRequest('https://restcountries.eu/rest/v2/all')
 		.then(resultValue => {
 			this.countriesRepository.addCountries(resultValue);
 			this.showCountries();
