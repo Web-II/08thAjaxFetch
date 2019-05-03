@@ -21,47 +21,34 @@ function fetchRequest(url){
 }
 class Country {
 	constructor(countryName, capital, region, flag) {
-		this.countryName = countryName;
-		this.capital = capital;
-		this.region = region;
-		this.flag = flag;
+		this._countryName = countryName;
+		this._capital = capital;
+		this._region = region;
+		this._flag = flag;
 	}
 	get countryName() {
 		return this._countryName;
 	}
-	set countryName(countryName) {
-		this._countryName = countryName;
-	}
+	
 	get capital() {
 		return this._capital;
 	}
-	set capital(capital) {
-		this._capital = capital
-	}
+	
 	get region() {
 		return this._region;
 	}
-	set region(region) {
-		this._region = region;
-	}
+	
 	get flag() {
 		return this._flag;
 	}
-	set flag(flag) {
-		this._flag = flag;
-	}
+	
 }
 class CountriesRepository {
-  	constructor() {
-    	this._countries = [];
+  	constructor(countries) {
+    	this._countries = countries;
   	}
 
   	get countries() { return this._countries; }
-
-  	addCountries(countries) {
-		  this._countries = 
-		         countries.map(c=>new Country(`${c.name} - ${c.nativeName}`,c.capital,c.region,c.flag))
-  	}
 
   	getCountries(searchString){
 		return searchString === '' ? this.countries 
@@ -70,27 +57,21 @@ class CountriesRepository {
 }
 class CountriesApp {
 	constructor() {
-		this.countriesRepository = new CountriesRepository();
 		this.getData();
 	}
-	get countriesRepository() {
-		return this._countriesRepository;
-	}
-	set countriesRepository(value) {
-		this._countriesRepository = value;
-	}
+	
 	getData(){
 		//ajaxRequest('https://restcountries.eu/rest/v2/all')
 		fetchRequest('https://restcountries.eu/rest/v2/all')
 		.then(resultValue => {
-			this.countriesRepository.addCountries(resultValue);
+			this._countriesRepository = new CountriesRepository(resultValue.map(r=>new Country(`${r.name} - ${r.nativeName}`,r.capital,r.region,r.flag)));
 			this.showCountries();
 		})
 		.catch(rejectValue => { console.log(rejectValue); });
 	}
 	showCountries = (event) => {
 		const val = typeof(event) === 'undefined'?'': event.target.value;
-		const countries = this.countriesRepository.getCountries(val);
+		const countries = this._countriesRepository.getCountries(val);
 		document.getElementById("countries").innerHTML = '';
 		document.getElementById("number").innerText= `Number of countries: ${countries.length}`;
 		countries.forEach((c) => {
