@@ -1,23 +1,23 @@
-function ajaxRequest(url){
+function ajaxRequest(url) {
 	return new Promise((resolve, reject) => {
-			const request = new XMLHttpRequest();
-			request.open('GET', url);
-			request.onreadystatechange = () => {
-				if (request.readyState === 4){
-				  	if (request.status === 200) {			  	
-						resolve(JSON.parse(request.responseText));
-					}
-					else {
-						reject(`ERROR ${request.status} while processing.`);
-					}
+		const request = new XMLHttpRequest();
+		request.open('GET', url);
+		request.onreadystatechange = () => {
+			if (request.readyState === 4) {
+				if (request.status === 200) {
+					resolve(JSON.parse(request.responseText));
+				}
+				else {
+					reject(`ERROR ${request.status} while processing.`);
 				}
 			}
-			request.send(); 
-		})
+		}
+		request.send();
+	})
 }
-function fetchRequest(url){
+function fetchRequest(url) {
 	return fetch(url)
-  		.then(body => body.json());
+		.then(body => body.json());
 }
 class Country {
 	constructor(countryName, capital, region, flag) {
@@ -29,51 +29,54 @@ class Country {
 	get countryName() {
 		return this._countryName;
 	}
-	
+
 	get capital() {
 		return this._capital;
 	}
-	
+
 	get region() {
 		return this._region;
 	}
-	
+
 	get flag() {
 		return this._flag;
 	}
-	
+
 }
 class CountriesRepository {
-  	constructor(countries) {
-    	this._countries = countries;
-  	}
+	constructor() {
+		this._countries = [];
+	}
 
-  	get countries() { return this._countries; }
-
-  	getCountries(searchString){
-		return searchString === '' ? this.countries 
-			: this.countries.filter((c)=>c.countryName.toLowerCase().startsWith(searchString.toLowerCase()));
-	} 
+	get countries() { return this._countries; }
+	addCountry(name, capital, region, flag) {
+		this._countries.push(new Country(name, capital, region, flag));
+	}
+	getCountries(searchString) {
+		return !searchString ? this.countries
+			: this.countries.filter((c) => c.countryName.toLowerCase().startsWith(searchString.toLowerCase()));
+	}
 }
 class CountriesApp {
 	constructor() {
 		this.getData();
 	}
-	
-	getData(){
+
+	getData() {
 		//ajaxRequest('https://restcountries.eu/rest/v2/all')
 		fetchRequest('https://restcountries.eu/rest/v2/all')
-		.then(resultValue => {
-			this._countriesRepository = new CountriesRepository(resultValue.map(r=>new Country(`${r.name} - ${r.nativeName}`,r.capital,r.region,r.flag)));
-			this.showCountries();
-		})
-		.catch(rejectValue => { console.log(rejectValue); });
+			.then(resultValue => {
+				this._countriesRepository = new CountriesRepository();
+				resultValue.forEach(r => this._countriesRepository.addCountry(`${r.name} - ${r.nativeName}`, r.capital, r.region, r.flag));
+				this.showCountries();
+			})
+			.catch(rejectValue => { console.log(rejectValue); });
 	}
 	showCountries = (event) => {
-		const val = typeof(event) === 'undefined'?'': event.target.value;
+		const val = typeof (event) === 'undefined' ? '' : event.target.value;
 		const countries = this._countriesRepository.getCountries(val);
 		document.getElementById("countries").innerHTML = '';
-		document.getElementById("number").innerText= `Number of countries: ${countries.length}`;
+		document.getElementById("number").innerText = `Number of countries: ${countries.length}`;
 		countries.forEach((c) => {
 			const tr = document.createElement("tr");
 			const td1 = document.createElement("td");
@@ -97,7 +100,7 @@ class CountriesApp {
 	}
 }
 
-const init = function(){
+const init = function () {
 	const app = new CountriesApp();
 	document.getElementById('search').addEventListener('keyup', app.showCountries);
 }

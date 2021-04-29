@@ -1,13 +1,13 @@
-function fetchRequest(url){
+function fetchRequest(url) {
 	return fetch(url)
-  		.then(body => body.json());
+		.then(body => body.json());
 }
 
-class JokeApp{
-	getData(){
+class JokeApp {
+	getData() {
 		fetchRequest('https://official-joke-api.appspot.com/random_joke') //retourneert promise object met response
-  		.then(data => this.toHtml(data)) //resolve promise (argument is response)
-		.catch(error => console.error(error)); //reject promise (argument is error)		
+			.then(data => this.toHtml(data)) //resolve promise (argument is response)
+			.catch(error => console.error(error)); //reject promise (argument is error)		
 	}
 	toHtml(joke) {
 		document.getElementById("category").innerHTML = `Category = ${joke.type}`;
@@ -16,7 +16,7 @@ class JokeApp{
 	}
 }
 
-const init = function(){
+const init = function () {
 	const jokeApp = new JokeApp();
 	document.getElementById("joke").onclick = () => {
 		jokeApp.getData();
