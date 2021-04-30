@@ -68,15 +68,18 @@ class CountriesApp {
 			.then(resultValue => {
 				this._countriesRepository = new CountriesRepository();
 				resultValue.forEach(r => this._countriesRepository.addCountry(`${r.name} - ${r.nativeName}`, r.capital, r.region, r.flag));
+				document.getElementById('body').classList.remove('hide');
 				this.showCountries();
 			})
-			.catch(rejectValue => { console.log(rejectValue); });
+			.catch(rejectValue => {
+				document.getElementById('message').classList.remove('hide');
+				document.getElementById('message').innerText = `Something went wrong retrieving the data: ${rejectValue}`;
+			});
 	}
 	showCountries = (event) => {
-		const val = typeof (event) === 'undefined' ? '' : event.target.value;
-		const countries = this._countriesRepository.getCountries(val);
+		const countries = this._countriesRepository.getCountries(event ? event.target.value : '');
 		document.getElementById("countries").innerHTML = '';
-		document.getElementById("number").innerText = `Number of countries: ${countries.length}`;
+		document.getElementById("number").innerText = `Number of countries: ${countries.length} `;
 		countries.forEach((c) => {
 			const tr = document.createElement("tr");
 			const td1 = document.createElement("td");
